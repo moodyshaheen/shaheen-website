@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر Shaheen الإلكتروني</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        header .logo h1 {
+            margin: 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .product-section {
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-around;
+        }
+
+        .product-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .product-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .cart-section {
+            padding: 20px;
+            background-color: #fff;
+            margin-top: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .cart-item button {
+            background-color: #dc3545;
+        }
+
+        .cart-item .quantity {
+            width: 40px;
+            text-align: center;
+        }
+
+        .total-price {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .contact-section, .login-section {
+            padding: 20px;
+            background-color: #fff;
+            margin: 20px 0;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .product-list {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav ul li {
+                display: block;
+                text-align: center;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Shaheen</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">الرئيسية</a></li>
+                <li><a href="#products">المنتجات</a></li>
+                <li><a href="#cart">السلة</a></li>
+                <li><a href="#contact">اتصل بنا</a></li>
+                <li><a href="#login">تسجيل الدخول</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="products" class="product-section">
+        <h2>المنتجات</h2>
+        <div class="product-list">
+            <div class="product-item">
+                <img src="product1.jpg" alt="منتج 1">
+                <h3>منتج 1</h3>
+                <p>سعر المنتج: 100 ريال</p>
+                <button class="add-to-cart" data-name="منتج 1" data-price="100">إضافة إلى السلة</button>
+            </div>
+            <div class="product-item">
+                <img src="product2.jpg" alt="منتج 2">
+                <h3>منتج 2</h3>
+                <p>سعر المنتج: 150 ريال</p>
+                <button class="add-to-cart" data-name="منتج 2" data-price="150">إضافة إلى السلة</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="cart" class="cart-section">
+        <h2>السلة</h2>
+        <div id="cart-items"></div>
+        <div class="total-price" id="total-price">إجمالي السلة: 0 ريال</div>
+        <button onclick="clearCart()">إفراغ السلة</button>
+    </section>
+
+    <section id="contact" class="contact-section">
+        <h2>اتصل بنا</h2>
+        <form id="contact-form">
+            <label for="name">الاسم:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" name="email" required>
+            <button type="submit">إرسال</button>
+        </form>
+    </section>
+
+    <section id="login" class="login-section">
+        <h2>تسجيل الدخول</h2>
+        <form id="login-form">
+            <label for="username">اسم المستخدم:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">دخول</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2024 Shaheen - جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', () => {
+                const name = button.getAttribute('data-name');
+                const price = parseFloat(button.getAttribute('data-price'));
+                addToCart(name, price);
+                alert(`${name} تم إضافته إلى السلة!`);
+            });
+        });
+
+        function addToCart(name, price) {
+            const existingProduct = cart.find(item => item.name === name);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            cartItemsDiv.innerHTML = '';
+
+            let total = 0;
+            cart.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('cart-item');
+                itemDiv.innerHTML = `
+                    <span>${item.name} - ${item.price} ريال × 
+                    <input type="number" value="${item.quantity}" min="1" class="quantity" onchange="updateQuantity('${item.name}', this.value)">
+                    </span>
+                    <button onclick="removeFromCart('${item.name}')">حذف</button>
+                `;
+                cartItemsDiv.appendChild(itemDiv);
+                total += item.price * item.quantity;
+            });
+
+            document.getElementById('total-price').innerText = `إجمالي السلة: ${total} ريال`;
+        }
+
+        function updateQuantity(name, quantity) {
+            quantity = parseInt(quantity);
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("الرجاء إدخال كمية صحيحة.");
+                return;
+            }
+            const product = cart.find(item => item.name === name);
+            if (product) {
+                product.quantity = quantity;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+            }
+        }
+
+        function removeFromCart(name) {
+            const index = cart.findIndex(item => item.name === name);
+            if (index !== -1) {
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+            }
+        }
+
+        function clearCart() {
+            if (confirm("هل أنت متأكد أنك تريد إفراغ السلة؟")) {
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+            }
+        }
+
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            if (name && email) {
+                alert("تم إرسال النموذج بنجاح.");
+            } else {
+                alert("يرجى ملء جميع الحقول.");
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username && password) {
+                alert("تم تسجيل الدخول بنجاح.");
+            } else {
+                alert("يرجى ملء جميع الحقول.");
+            }
+        });
+
+        updateCart();
+    </script>
+</body>
+</html>
